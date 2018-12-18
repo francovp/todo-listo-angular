@@ -1,15 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { Tarea, EstadoTarea } from './tarea';
 import { TareaService } from './tarea.service';
-
+import { Http, Response } from '@angular/http';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 
+
 export class AppComponent implements OnInit {
   title = 'Todo Listo!';
+
+  //url : string = 'http://localhost:8000/tareas';
   estadoTareas = EstadoTarea;
   tareaSeleccionada: Tarea;
   tareas: Array<Tarea>;
@@ -17,9 +20,11 @@ export class AppComponent implements OnInit {
 
   constructor(public tareaService: TareaService) {
     this.tareas = [];
-    this.newTarea = new Tarea(null, null, null);
+    this.newTarea = new Tarea(null, null, null,null);
+    
   }
 
+  
   ngOnInit() {
     this.tareaService.getTareas()
         .subscribe((ts: Array<Tarea>) => {
@@ -29,6 +34,7 @@ export class AppComponent implements OnInit {
 
   actualizarTarea(t: Tarea) {
     console.log(`La tarea ${t} fue actualizada!`);
+    this.tareaService.actualizarTarea(t);
   }
 
   seleccionarTarea(t: Tarea) {

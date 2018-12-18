@@ -1,3 +1,4 @@
+
 <app-layout>
 
   <div class="row">
@@ -33,7 +34,14 @@
               class="alert alert-danger">
               La descripcion debe tener entre 10 y 100 caracteres
             </div>
-            
+
+
+          
+            <input matInput [matDatepicker]="myDatepicker">
+            <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
+            <mat-datepicker #myDatepicker></mat-datepicker>
+         
+          
 
             <button [disabled]="f.invalid"
                     type="submit"

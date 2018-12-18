@@ -18,11 +18,12 @@ export class Tarea {
     descripcion;
     estado: EstadoTarea;
 
-    constructor(id, titulo, descripcion, estado = EstadoTarea.Creada) {
+    constructor(id, titulo, descripcion, estado) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.estado = estado;
+        
     }
 
     toString() {

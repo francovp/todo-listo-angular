@@ -3,11 +3,15 @@ import { NgModule } from '@angular/core';
 import { UiModule } from './ui/ui.module';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { HttpModule } from '@angular/http';
 
 import { AppComponent } from './app.component';
 import { TareaCreadaComponent } from './tarea-creada/tarea-creada.component';
 import { TareaEnProcesoComponent } from './tarea-en-proceso/tarea-en-proceso.component';
 import { TareaTerminadaComponent } from './tarea-terminada/tarea-terminada.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -18,9 +22,13 @@ import { TareaTerminadaComponent } from './tarea-terminada/tarea-terminada.compo
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     UiModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
