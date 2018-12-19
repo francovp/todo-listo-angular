@@ -110,7 +110,7 @@ export class AppComponent implements OnInit {
 
   crearTarea() {
     console.log(this.newTarea);
-    this.tareaService.crearTarea(this.newTarea).subscribe(_ => {
+    this.tareaService.crearTarea(this.newTarea, this.user_token).subscribe(_ => {
       console.log('Creacion Tarea OK');
       this.refrescarTareas();
 
