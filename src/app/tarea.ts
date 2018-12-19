@@ -17,12 +17,16 @@ export class Tarea {
     titulo: string;
     descripcion;
     estado: EstadoTarea;
+    fecha_inicio: any;
+    fecha_termino: any;
 
-    constructor(id, titulo, descripcion, estado = EstadoTarea.Creada) {
+    constructor(id, titulo, descripcion, fecha_inicio, fecha_termino, estado = EstadoTarea.Creada) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
         this.estado = estado;
+        this.fecha_inicio = fecha_inicio;
+        this.fecha_termino = fecha_termino;
     }
 
     toString() {

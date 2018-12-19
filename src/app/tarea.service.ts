@@ -17,6 +17,8 @@ export class TareaService {
       'titulo': t.titulo,
       'descripcion': t.descripcion,
       'estado': t.estado,
+      'fecha_inicio': t.fecha_inicio,
+      'fecha_termino': t.fecha_termino
     }, {
       headers: {'Authorization': `Token ${user_token}`}});
   }
@@ -26,6 +28,8 @@ export class TareaService {
       'titulo': t.titulo,
       'descripcion': t.descripcion,
       'estado': t.estado,
+      'fecha_inicio': t.fecha_inicio,
+      'fecha_termino': t.fecha_termino
     }, {
       headers: {'Authorization': `Token ${user_token}`}});
   }

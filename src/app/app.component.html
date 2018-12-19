@@ -15,7 +15,8 @@
                       [(ngModel)]="newTarea.titulo"
                       class="form-control"
                       type="text"                     
-                      name="titulo"/>
+                      name="titulo"
+                       [ngModelOptions]="{standalone: true}"/>
               </div>
               <div *ngIf="titulo.invalid && (titulo.dirty || titulo.touched)"
                 class="alert alert-danger">
@@ -30,21 +31,34 @@
                           required minlength="10" maxlength="100"
                           [(ngModel)]="newTarea.descripcion"
                           class="form-control"
-                          name="descripcion"></textarea>
+                          name="descripcion"
+                          [ngModelOptions]="{standalone: true}"></textarea>
               </div>
               <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)"
                 class="alert alert-danger">
                 La descripcion debe tener entre 10 y 100 caracteres
               </div>
-              
 
+              <mat-form-field>
+                  <mat-label>Fecha de inicio</mat-label>
+                  <input matInput [matDatepicker]="initialPicker" [(ngModel)]="newTarea.fecha_inicio" [ngModelOptions]="{standalone: true}">
+                  <mat-datepicker-toggle matSuffix [for]="initialPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #initialPicker></mat-datepicker>
+              </mat-form-field>
+              <mat-form-field>
+                  <mat-label>Fecha de término</mat-label>
+                  <input matInput [matDatepicker]="endPicker" [(ngModel)]="newTarea.fecha_termino" [ngModelOptions]="{standalone: true}">
+                  <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #endPicker></mat-datepicker>
+              </mat-form-field>
+              <br>
               <button [disabled]="f.invalid"
                       type="submit"
                       class="btn btn-primary">
                       Crear Tarea
               </button>
             </form>    
-
+            <hr>
             <div style="height: 300px;"
               leaflet 
               [leafletOptions]="options"

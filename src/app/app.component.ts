@@ -22,11 +22,11 @@ export class AppComponent implements OnInit {
   password: string;
   loggedIn = false;
   user_token: string;
-  options; 
+  options;
 
   constructor(public tareaService: TareaService, private http: HttpClient) {
     this.tareas = [];
-    this.newTarea = new Tarea(null, null, null);
+    this.newTarea = new Tarea(null, null, null, null, null);
     let maybe_user_token = window.localStorage.getItem('user_token');
     console.log(`ls user token: ${maybe_user_token}`);
     if(maybe_user_token) {

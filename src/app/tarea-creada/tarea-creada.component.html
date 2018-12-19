@@ -7,6 +7,17 @@
     <p contenteditable="true" #desc>
       {{ tarea.descripcion }}
     </p>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="initialPicker" [value]="tarea.fecha_inicio" [(ngModel)]="tarea.fecha_inicio">
+      <mat-datepicker-toggle matSuffix [for]="initialPicker"></mat-datepicker-toggle>
+      <mat-datepicker #initialPicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [matDatepicker]="endPicker" [(ngModel)]="tarea.fecha_termino">
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+    </mat-form-field>
   </div>
 
   <button class="btn btn-primary" (click)="actualizarTarea(titulo.textContent, desc.textContent)">
