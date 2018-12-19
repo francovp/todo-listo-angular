@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
 
   constructor(public tareaService: TareaService, private http: HttpClient) {
     this.tareas = [];
-    this.newTarea = new Tarea(null, null, null, null, null);
+    this.newTarea = new Tarea(null, null, null, null, null,0,null,null);
     let maybe_user_token = window.localStorage.getItem('user_token');
     console.log(`ls user token: ${maybe_user_token}`);
     if(maybe_user_token) {
@@ -66,12 +66,39 @@ export class AppComponent implements OnInit {
       this.refrescarTareas();
     });
   }
-
+  markersMap2: L.Layer[] = [];
   refrescarTareas() {
+    console.log("refresco");
     this.tareaService.getTareas(this.user_token)
       .subscribe((ts: Array<Tarea>) => {
         this.tareas = ts;
       });
+
+    for(let i of this.tareas)
+    {
+      if(i.fecha_inicio==null|| i.fecha_termino == null)
+        var punto = L.marker([i.lat,i.lng],{
+          icon: L.icon({
+             iconSize: [ 25, 41 ],
+             iconAnchor: [ 13, 41 ],
+             iconUrl:   'assets/marker-icon.png',
+             shadowUrl: 'assets/marker-shadow.png'
+          })
+        } ).bindPopup(i.titulo + "\n"+i.descripcion+"\n"+i.estado);
+      else if(i.fecha_inicio!=null && i.fecha_termino != null)
+      var punto = L.marker([i.lat,i.lng],
+        {
+          icon: L.icon({
+             iconSize: [ 25, 41 ],
+             iconAnchor: [ 13, 41 ],
+             iconUrl:   'assets/marker-icon.png',
+             shadowUrl: 'assets/marker-shadow.png'
+          })
+        }).bindPopup(i.titulo + "\n"+i.descripcion+"\n"+i.fecha_inicio+"\n"+i.fecha_termino+"\n"+i.estado);
+      
+      this.markersMap2.push(punto);
+    }
+    console.log("laayers",this.markersMap2);
   }
 
   mapClick(evt) {
@@ -82,8 +109,11 @@ export class AppComponent implements OnInit {
   }
 
   markers: L.Layer[] = [];
-
+  lat: number;
+  lng: number;
   addMarker(latlng) {
+    this.lat = latlng['lat'];
+    this.lng = latlng['lng']
     const newMarker = L.marker([latlng['lat'],  latlng['lng']], {
       icon: L.icon({
          iconSize: [ 25, 41 ],
@@ -109,9 +139,8 @@ export class AppComponent implements OnInit {
   }
 
   crearTarea() {
-    console.log(this.newTarea);
-    this.tareaService.crearTarea(this.newTarea, this.user_token).subscribe(_ => {
-      console.log('Creacion Tarea OK');
+    console.log('ubicacion : ',this.lat, this.lng);
+    this.tareaService.crearTarea(this.newTarea, this.user_token, this.lat, this.lng ).subscribe(_ => {
       this.refrescarTareas();
 
     })
