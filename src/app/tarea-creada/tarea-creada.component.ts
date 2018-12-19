@@ -9,6 +9,13 @@ import { TareaBase } from '../tarea-base/tarea-base';
 })
 export class TareaCreadaComponent extends TareaBase {
 
+  actualizarTarea(nuevoTitulo, nuevaDesc) {
+    this.tarea.titulo = nuevoTitulo;
+    this.tarea.descripcion = nuevaDesc;
+    console.log(this.tarea);
+    this.tareaActualizada.emit(this.tarea);
+  }
+
   obtenerSiguienteEstado(t: Tarea) {
     return EstadoTarea.EnProceso;
   }

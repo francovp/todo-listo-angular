@@ -3,6 +3,7 @@ import { Tarea, EstadoTarea } from './tarea';
 import { TareaService } from './tarea.service';
 import { interval } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-root',
@@ -10,31 +11,22 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./app.component.css']
 })
 
-
 export class AppComponent implements OnInit {
-  
   title = 'Todo Listo!';
   estadoTareas = EstadoTarea;
   tareaSeleccionada: Tarea;
   tareas: Array<Tarea>;
   newTarea: Tarea;
 
-  
   username: string;
   password: string;
   loggedIn = false;
   user_token: string;
   options; 
 
-  /*
-  constructor(public tareaService: TareaService) {
-    this.tareas = [];
-    this.newTarea = new Tarea(null, null, null,null);
-    
-  }*/
   constructor(public tareaService: TareaService, private http: HttpClient) {
     this.tareas = [];
-    this.newTarea = new Tarea(null, null, null,null);
+    this.newTarea = new Tarea(null, null, null);
     let maybe_user_token = window.localStorage.getItem('user_token');
     console.log(`ls user token: ${maybe_user_token}`);
     if(maybe_user_token) {
@@ -58,16 +50,21 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-        /*this.tareaService.getTareas()
-        .subscribe((ts: Array<Tarea>) => {
-          this.tareas = ts;
-        });*/
 
-        this.refrescarTareas();
-        interval(30 * 1000).subscribe(_ => {
-          console.log('Refrescando tareas');
-          this.refrescarTareas();
-        });
+    this.options = {
+      layers: [
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+      ],
+      zoom: 15,      
+      center: L.latLng(-33.0454915,-71.6124715),
+    };
+    
+
+    this.refrescarTareas();
+    interval(30 * 1000).subscribe(_ => {
+      console.log('Refrescando tareas');
+      this.refrescarTareas();
+    });
   }
 
   refrescarTareas() {
@@ -77,7 +74,31 @@ export class AppComponent implements OnInit {
       });
   }
 
- 
+  mapClick(evt) {
+    console.log(`Click: ${evt}`);
+    console.log(Object.keys(evt));
+    console.log(evt['latlng']);
+    this.addMarker(evt['latlng']);
+  }
+
+  markers: L.Layer[] = [];
+
+  addMarker(latlng) {
+    const newMarker = L.marker([latlng['lat'],  latlng['lng']], {
+      icon: L.icon({
+         iconSize: [ 25, 41 ],
+         iconAnchor: [ 13, 41 ],
+         iconUrl:   'assets/marker-icon.png',
+         shadowUrl: 'assets/marker-shadow.png'
+      })
+    });
+
+    while(this.markers.length > 0) {
+      this.markers.pop();
+    }
+		this.markers.push(newMarker);
+	}
+
   actualizarTarea(t: Tarea) {
     console.log(`La tarea ${t} fue actualizada!`);
     this.tareaService.actualizarTarea(t).subscribe(_ => { });
@@ -98,7 +119,7 @@ export class AppComponent implements OnInit {
 
   estado2str(e: EstadoTarea) {
     switch (e) {
-      case EstadoTarea.Creada:    return 'Creada';
+      case EstadoTarea.Creada: return 'Creada';
       case EstadoTarea.EnProceso: return 'En Proceso';
       case EstadoTarea.Terminada: return 'Terminada';
     }

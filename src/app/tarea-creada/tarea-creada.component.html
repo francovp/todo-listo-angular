@@ -1,12 +1,18 @@
 <div class="row">
   <div class="col-md-12">
     <h2>
-    {{ tarea.id }} {{ tarea.titulo }}
+    {{ tarea.id }}
+    <span #titulo (change)="console.log('aaa')" contenteditable="true">{{ tarea.titulo }}</span>
     </h2>
-    <p>
+    <p contenteditable="true" #desc>
       {{ tarea.descripcion }}
     </p>
   </div>
+
+  <button class="btn btn-primary" (click)="actualizarTarea(titulo.textContent, desc.textContent)">
+  Actualizar Tarea
+  </button>
+
   <button (click)="pasarSiguienteEstado()"
           class="btn btn-primary">
       Pasar a estado En Proceso
