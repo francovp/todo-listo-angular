@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Tarea, EstadoTarea } from './tarea';
 import { TareaService } from './tarea.service';
-import { Http, Response } from '@angular/http';
+import { interval } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -10,31 +12,75 @@ import { Http, Response } from '@angular/http';
 
 
 export class AppComponent implements OnInit {
+  
   title = 'Todo Listo!';
-
-  //url : string = 'http://localhost:8000/tareas';
   estadoTareas = EstadoTarea;
   tareaSeleccionada: Tarea;
   tareas: Array<Tarea>;
   newTarea: Tarea;
 
+  
+  username: string;
+  password: string;
+  loggedIn = false;
+  user_token: string;
+  options; 
+
+  /*
   constructor(public tareaService: TareaService) {
     this.tareas = [];
     this.newTarea = new Tarea(null, null, null,null);
     
+  }*/
+  constructor(public tareaService: TareaService, private http: HttpClient) {
+    this.tareas = [];
+    this.newTarea = new Tarea(null, null, null,null);
+    let maybe_user_token = window.localStorage.getItem('user_token');
+    console.log(`ls user token: ${maybe_user_token}`);
+    if(maybe_user_token) {
+      this.loggedIn = true;
+      this.user_token = maybe_user_token; 
+    }
   }
 
-  
+  iniciarSesion() {
+    console.log(`u: ${this.username} - p: ${this.password}`);  
+    this.http.post('http://localhost:8000/rest-auth/login/', {
+      'username': this.username,
+      'password': this.password,
+    }).subscribe(res => {
+        console.log(`res: ${res['key']}`);
+        this.loggedIn = true;
+        this.user_token = res['key'];
+        window.localStorage.setItem('user_token', res['key']);
+        this.refrescarTareas();
+    })  
+  }
+
   ngOnInit() {
-    this.tareaService.getTareas()
+        /*this.tareaService.getTareas()
         .subscribe((ts: Array<Tarea>) => {
           this.tareas = ts;
+        });*/
+
+        this.refrescarTareas();
+        interval(30 * 1000).subscribe(_ => {
+          console.log('Refrescando tareas');
+          this.refrescarTareas();
         });
   }
 
+  refrescarTareas() {
+    this.tareaService.getTareas(this.user_token)
+      .subscribe((ts: Array<Tarea>) => {
+        this.tareas = ts;
+      });
+  }
+
+ 
   actualizarTarea(t: Tarea) {
     console.log(`La tarea ${t} fue actualizada!`);
-    this.tareaService.actualizarTarea(t);
+    this.tareaService.actualizarTarea(t).subscribe(_ => { });
   }
 
   seleccionarTarea(t: Tarea) {
@@ -43,7 +89,11 @@ export class AppComponent implements OnInit {
 
   crearTarea() {
     console.log(this.newTarea);
-    this.tareaService.crearTarea(this.newTarea);
+    this.tareaService.crearTarea(this.newTarea).subscribe(_ => {
+      console.log('Creacion Tarea OK');
+      this.refrescarTareas();
+
+    })
   }
 
   estado2str(e: EstadoTarea) {

@@ -1,198 +1,124 @@
-
 <app-layout>
 
-  <div class="row">
-    <div class="col-md-4" style="border: 1px solid black;">
-        <form (ngSubmit)="crearTarea()" #f="ngForm">        
-            <div class="form-group">
-              <label for="titulo">
-                Titulo ({{ titulo?.value?.length }})
-              </label>
-              <input #titulo="ngModel"
-                     required minlength="5"
-                     [(ngModel)]="newTarea.titulo"
-                     class="form-control"
-                     type="text"                     
-                     name="titulo"/>
-            </div>
-            <div *ngIf="titulo.invalid && (titulo.dirty || titulo.touched)"
-              class="alert alert-danger">
-              El titulo debe tener largo mayor a 5 caracteres
-            </div>
-            
-            <div class="form-group">
-              <label for="descripcion">
-                Descripcion ({{ descripcion?.value?.length }})
-              </label>
-              <textarea #descripcion="ngModel"
-                        required minlength="10" maxlength="100"
-                        [(ngModel)]="newTarea.descripcion"
-                        class="form-control"
-                        name="descripcion"></textarea>
-            </div>
-            <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)"
-              class="alert alert-danger">
-              La descripcion debe tener entre 10 y 100 caracteres
-            </div>
-
-
-          
-            <input matInput [matDatepicker]="myDatepicker">
-            <mat-datepicker-toggle matSuffix [for]="myDatepicker"></mat-datepicker-toggle>
-            <mat-datepicker #myDatepicker></mat-datepicker>
-         
-          
-
-            <button [disabled]="f.invalid"
-                    type="submit"
-                    class="btn btn-primary">
-                    Crear Tarea
-            </button>
-          </form>    
-    </div>
-
-    <div class="col-md-8" style="border: 1px solid black;">
-        <table class="table">
-          <tr>
-            <th>#</th>
-            <th>Titulo</th>
-            <th>Estado</th>
-          </tr>
-          <tr *ngFor="let t of tareas;"
-            [class.selected]="t === tareaSeleccionada">
-            <td>{{ t.id }}</td>
-            <td>
-              <a  href="#"
-                  (click)="seleccionarTarea(t)">
-                {{ t.titulo }}
-              </a>
-            </td>
-            <td>{{ estado2str(t.estado) }}</td>
-          </tr>
-        </table>
-    </div>
-  </div>
-
-  <hr>  
-
-  <div *ngIf="tareaSeleccionada"
-       class="row"
-       style="border: 1px solid black;">
-
-    <div [ngSwitch]="tareaSeleccionada.estado" class="col-md-12">
-      
-        <app-tarea-creada
-          *ngSwitchCase="estadoTareas.Creada"
-          [tarea]="tareaSeleccionada"
-          (tareaActualizada)="actualizarTarea($event)">
-        </app-tarea-creada>
-
-        <app-tarea-en-proceso
-          *ngSwitchCase="estadoTareas.EnProceso"
-          [tarea]="tareaSeleccionada"
-          (tareaActualizada)="actualizarTarea($event)">
-        </app-tarea-en-proceso>
-
-        <app-tarea-terminada
-          *ngSwitchCase="estadoTareas.Terminada"
-          [tarea]="tareaSeleccionada"
-          (tareaActualizada)="actualizarTarea($event)">
-        </app-tarea-terminada>
-
-    </div>
-  </div>
-
-</app-layout>
-
-
-<!--
-  <div class="row">
-    <div class="col-lg-12" style="text-align: center">
-      <h1>
-        {{ title }}
-      </h1>
-    </div>
-  </div>
-
-  <div class="row">
-    <div class="col-md-4">
-
-      <form (ngSubmit)="crearTarea()" #tareaForm="ngForm">
-        
-        <div class="form-group">
-          <label for="titulo">Titulo</label>
-          <input [(ngModel)]="newTarea.titulo"
-                 class="form-control"
-                 type="text"
-                 id="titulo"
-                 name="titulo"
-                 required minlength="5"
-                 #titulo="ngModel"/>                 
-        </div>
-        <div *ngIf="titulo.invalid && (titulo.dirty || titulo.touched)"
-              class="alert alert-danger">
-              El titulo debe tener largo mayor a 5 caracteres
-        </div>
-
-        <div class="form-group">
-          <label for="descripcion">Descripcion ({{ descripcion?.value?.length || 0 }})</label>
-          <textarea [(ngModel)]="newTarea.descripcion"
-                    class="form-control"
-                    id="descripcion"
-                    name="descripcion"
-                    required minlength="10"
-                    #descripcion="ngModel"
-                    #desc></textarea>
-        </div>
-
-        <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)"
-              class="alert alert-danger">
-              La descripcion debe tener largo mayor a 10 caracteres
-        </div>
-
-        <button type="submit"
-                [disabled]="tareaForm.invalid"
-                class="btn btn-primary">
-                Crear Tarea
-        </button>
-      </form>
-
-    </div>
-    <div class="col-md-8">
-      <table class="table">
-        <tr>
-          <th>#</th>
-          <th>Titulo</th>
-          <th>Estado</th>
-        </tr>
-        <tr *ngFor="let t of tareas; let odd = odd; let even = even;"
-          [class.selected]="t === tareaSeleccionada">
-          <td>{{ t.id }}</td>
-          <td><a href="#" (click)="seleccionarTarea(t)">{{ t.titulo }}</a></td>
-          <td>{{ estado2str(t.estado) }}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <hr *ngIf="tareaSeleccionada" />
-
-  <div class="col-md-12" *ngIf="tareaSeleccionada">
-      <div [ngSwitch]="tareaSeleccionada.estado">
-        <app-tarea-creada
-          *ngSwitchCase="estadoTareas.Creada"
-          [tarea]="tareaSeleccionada"
-          (tareaActualizada)="guardarTarea($event)">
-        </app-tarea-creada>
-        <app-tarea-en-proceso [tarea]="tareaSeleccionada" *ngSwitchCase="estadoTareas.EnProceso"></app-tarea-en-proceso>
-        <app-tarea-terminada  [tarea]="tareaSeleccionada" *ngSwitchCase="estadoTareas.Terminada"></app-tarea-terminada>
-      </div>
-  </div>
   
 
+  <div *ngIf="loggedIn">
+    <div class="row">
+      <div class="col-md-4" style="border: 1px solid black;">
+          <form (ngSubmit)="crearTarea()" #f="ngForm">        
+              <div class="form-group">
+                <label for="titulo">
+                  Titulo ({{ titulo?.value?.length }})
+                </label>
+                <input #titulo="ngModel"
+                      required minlength="5"
+                      [(ngModel)]="newTarea.titulo"
+                      class="form-control"
+                      type="text"                     
+                      name="titulo"/>
+              </div>
+              <div *ngIf="titulo.invalid && (titulo.dirty || titulo.touched)"
+                class="alert alert-danger">
+                El titulo debe tener largo mayor a 5 caracteres
+              </div>
+              
+              <div class="form-group">
+                <label for="descripcion">
+                  Descripcion ({{ descripcion?.value?.length }})
+                </label>
+                <textarea #descripcion="ngModel"
+                          required minlength="10" maxlength="100"
+                          [(ngModel)]="newTarea.descripcion"
+                          class="form-control"
+                          name="descripcion"></textarea>
+              </div>
+              <div *ngIf="descripcion.invalid && (descripcion.dirty || descripcion.touched)"
+                class="alert alert-danger">
+                La descripcion debe tener entre 10 y 100 caracteres
+              </div>
+              
+
+              <button [disabled]="f.invalid"
+                      type="submit"
+                      class="btn btn-primary">
+                      Crear Tarea
+              </button>
+            </form>    
+
+            
+
+      </div>
+
+      <div class="col-md-8" style="border: 1px solid black;">
+          <table class="table">
+            <tr>
+              <th>#</th>
+              <th>Titulo</th>
+              <th>Estado</th>
+            </tr>
+            <tr *ngFor="let t of tareas;"
+              [class.selected]="t === tareaSeleccionada">
+              <td>{{ t.id }}</td>
+              <td>
+                <a  href="#"
+                    (click)="seleccionarTarea(t)">
+                  {{ t.titulo }}
+                </a>
+              </td>
+              <td>{{ estado2str(t.estado) }}</td>
+            </tr>
+          </table>
+      </div>
+    </div>
+
+    <hr>  
+
+    <div *ngIf="tareaSeleccionada"
+        class="row"
+        style="border: 1px solid black;">
+
+      <div [ngSwitch]="tareaSeleccionada.estado" class="col-md-12">
+        
+          <app-tarea-creada
+            *ngSwitchCase="estadoTareas.Creada"
+            [tarea]="tareaSeleccionada"
+            (tareaActualizada)="actualizarTarea($event)">
+          </app-tarea-creada>
+
+          <app-tarea-en-proceso
+            *ngSwitchCase="estadoTareas.EnProceso"
+            [tarea]="tareaSeleccionada"
+            (tareaActualizada)="actualizarTarea($event)">
+          </app-tarea-en-proceso>
+
+          <app-tarea-terminada
+            *ngSwitchCase="estadoTareas.Terminada"
+            [tarea]="tareaSeleccionada"
+            (tareaActualizada)="actualizarTarea($event)">
+          </app-tarea-terminada>
+
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loggedIn">
+
+    <form (ngSubmit)="iniciarSesion()" >
+    <div class="form-group">
+      <label for="username">Usuario</label>
+      <input [(ngModel)]="username" class="form-control" type="text" name="username"/>
+    </div>
+
+    <div class="form-group">
+    <label for="password">Contraseña</label>
+    <input [(ngModel)]="password" class="form-control" type="password" name="password"/>
+
+    </div>
+
+    <button class="btn btn-primary" type="submit">Iniciar Sesión</button>
+
+    </form>
+  </div>
+
 </app-layout>
-
--->
-
-
 
