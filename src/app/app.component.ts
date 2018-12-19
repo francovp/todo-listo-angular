@@ -101,7 +101,7 @@ export class AppComponent implements OnInit {
 
   actualizarTarea(t: Tarea) {
     console.log(`La tarea ${t} fue actualizada!`);
-    this.tareaService.actualizarTarea(t).subscribe(_ => { });
+    this.tareaService.actualizarTarea(t, this.user_token).subscribe(_ => { });
   }
 
   seleccionarTarea(t: Tarea) {
