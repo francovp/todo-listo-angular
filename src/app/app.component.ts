@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 import { TmplAstElement } from '@angular/compiler';
+import { DatePipe } from '@angular/common'
 
 @Component({
   selector: 'app-root',
@@ -155,7 +156,7 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
     option2;
     constructor(
         public dialogRef: MatDialogRef<AllGeoreferencedTasksDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: any) {}
+        @Inject(MAT_DIALOG_DATA) public data: any,public datepipe: DatePipe ) {}
 
         ngOnInit(){
           this.option2 = {
@@ -183,9 +184,12 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
                             iconUrl:   'assets/marker-icon.png',
                             shadowUrl: 'assets/marker-shadow.png'
                         })
-                    } ).bindPopup("Titulo: "+task.titulo + " \n Descripsión:"+task.descripcion+" \n Estado:"+estado);
+                    } ).bindPopup("<p>Titulo: "+task.titulo + "</p><p>Descripsión:"+task.descripcion+"</p><p>Estado:"+estado+"</p>");
                     this.markersMap2.push(punto);
                 } else {
+                    
+                    var fechaInicio =this.datepipe.transform(task.fecha_inicio, 'dd-MM-yyyy');
+                    var fechaTermino =this.datepipe.transform(task.fecha_termino, 'dd-MM-yyyy');
                     let punto = L.marker(latlng,
                         {
                             icon: L.icon({
@@ -194,7 +198,7 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
                                 iconUrl:   'assets/marker-icon.png',
                                 shadowUrl: 'assets/marker-shadow.png'
                             })
-                        }).bindPopup("Titulo: "+task.titulo + "\n Descripsión: "+task.descripcion+" \n Fecha de inicio: "+task.fecha_inicio+" \n Fecha de termino:"+task.fecha_termino+" \n Estado: "+estado);
+                        }).bindPopup("<p>Titulo: "+task.titulo + "</p><p>Descripsión: "+task.descripcion+"</p><p>Fecha de inicio: "+fechaInicio+"</p><p>Fecha de termino:"+fechaTermino+"</p><p>Estado: "+estado+"</p>");
 
                     this.markersMap2.push(punto);
                 }
