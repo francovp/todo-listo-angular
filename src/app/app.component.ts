@@ -5,6 +5,7 @@ import { interval } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import { TmplAstElement } from '@angular/compiler';
 
 @Component({
   selector: 'app-root',
@@ -64,6 +65,7 @@ export class AppComponent implements OnInit {
 
 
     this.refrescarTareas();
+
     interval(30 * 1000).subscribe(_ => {
       console.log('Refrescando tareas');
       this.refrescarTareas();
@@ -128,7 +130,8 @@ export class AppComponent implements OnInit {
   }
 
     openDialog(): void {
-        const dialogRef = this.dialog.open(AllGeoreferencedTasksDialogComponent, {
+      console.log("las tareas son ",this.tareas);
+      const dialogRef = this.dialog.open(AllGeoreferencedTasksDialogComponent, {
             height: '80vh',
             width: '100vw',
             data: {tasks: this.tareas}
@@ -147,14 +150,30 @@ export class AppComponent implements OnInit {
 })
 export class AllGeoreferencedTasksDialogComponent implements OnInit {
     markersMap2: L.Layer[] = [];
+    option2;
     constructor(
         public dialogRef: MatDialogRef<AllGeoreferencedTasksDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any) {}
 
         ngOnInit(){
+          this.option2 = {
+            layers: [
+              L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
+            ],
+            zoom: 15,
+            center: L.latLng(-33.0454915, -71.6124715),
+          };
+            
             for (let task of this.data.tasks) {
+              
+                if (task.estado ==0)
+                  var estado = "Creada";
+                else if (task.estado == 1)
+                  var estado = "En Proceso";
+                else
+                  var estado = "Terminada";
                 let latlng = L.latLng(task.lat, task.lng);
-                if (task.fecha_inicio === null || task.fecha_termino === null) {
+                if (task.fecha_inicio == null || task.fecha_termino == null) {
                     let punto = L.marker(latlng, {
                         icon: L.icon({
                             iconSize: [ 25, 41 ],
@@ -162,7 +181,8 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
                             iconUrl:   'assets/marker-icon.png',
                             shadowUrl: 'assets/marker-shadow.png'
                         })
-                    } ).bindPopup(task.titulo + "\n"+task.descripcion+"\n"+task.estado);
+                    } ).bindPopup("Titulo: "+task.titulo + " \n Descripsión:"+task.descripcion+" \n Estado:"+estado);
+                    this.markersMap2.push(punto);
                 } else {
                     let punto = L.marker(latlng,
                         {
@@ -172,7 +192,7 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
                                 iconUrl:   'assets/marker-icon.png',
                                 shadowUrl: 'assets/marker-shadow.png'
                             })
-                        }).bindPopup(task.titulo + "\n"+task.descripcion+"\n"+task.fecha_inicio+"\n"+task.fecha_termino+"\n"+task.estado);
+                        }).bindPopup("Titulo: "+task.titulo + "\n Descripsión: "+task.descripcion+" \n Fecha de inicio: "+task.fecha_inicio+" \n Fecha de termino:"+task.fecha_termino+" \n Estado: "+estado);
 
                     this.markersMap2.push(punto);
                 }
