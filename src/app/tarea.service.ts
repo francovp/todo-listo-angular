@@ -12,13 +12,17 @@ export class TareaService {
 
   constructor(private http: HttpClient) { }
 
-  crearTarea(t: Tarea, user_token): Observable<any> {
+  crearTarea(t: Tarea, user_token,username): Observable<any> {
+    console.log("el user es : ",username);
     return this.http.post('http://localhost:8000/tareas/', {
       'titulo': t.titulo,
       'descripcion': t.descripcion,
       'estado': t.estado,
       'fecha_inicio': t.fecha_inicio,
-      'fecha_termino': t.fecha_termino
+      'fecha_termino': t.fecha_termino,
+      'lat': t.lat,
+      'lng': t.lng,
+      'nombre_usuario': username
     }, {
       headers: {'Authorization': `Token ${user_token}`}});
   }

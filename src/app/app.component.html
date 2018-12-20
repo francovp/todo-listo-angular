@@ -94,12 +94,16 @@
           <tbody>
             <tr>
               <th>#</th>
+              <th>id</th>
               <th>Titulo</th>
               <th>Estado</th>
             </tr>
             <tr
-              *ngFor="let t of tareas;"
+              *ngFor="let t of tareas;let rowIndex = index"
+              
               [class.selected]="t === tareaSeleccionada">
+              <ng-container *ngIf="t.nombre_usuario == username;">
+              <td>{{ rowIndex+1 }}</td>
               <td>{{ t.id }}</td>
               <td>
                 <a
@@ -109,7 +113,8 @@
                 </a>
               </td>
               <td>{{ estado2str(t.estado) }}</td>
-
+              </ng-container>
+              
             </tr>
           </tbody>
         </table>

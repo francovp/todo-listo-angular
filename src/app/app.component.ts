@@ -30,12 +30,14 @@ export class AppComponent implements OnInit {
 
   constructor(public tareaService: TareaService, private http: HttpClient, public dialog: MatDialog) {
     this.tareas = [];
-    this.newTarea = new Tarea(null, null, null, null, null,0,null,null);
+    this.newTarea = new Tarea(null, null, null, null, null,0,null,null,null);
     let maybe_user_token = window.localStorage.getItem('user_token');
-    console.log(`ls user token: ${maybe_user_token}`);
+    let maybe_user = window.localStorage.getItem('username');
+    console.log("nombre de usuario",maybe_user);
     if(maybe_user_token) {
       this.loggedIn = true;
       this.user_token = maybe_user_token;
+      this.username = maybe_user;
     }
   }
 
@@ -49,6 +51,7 @@ export class AppComponent implements OnInit {
         this.loggedIn = true;
         this.user_token = res['key'];
         window.localStorage.setItem('user_token', res['key']);
+        window.localStorage.setItem('username', this.username);
         this.refrescarTareas();
     })
   }
@@ -116,7 +119,7 @@ export class AppComponent implements OnInit {
   }
 
   crearTarea() {
-    this.tareaService.crearTarea(this.newTarea, this.user_token).subscribe(_ => {
+    this.tareaService.crearTarea(this.newTarea, this.user_token,this.username).subscribe(_ => {
       this.refrescarTareas();
     });
   }
@@ -130,7 +133,6 @@ export class AppComponent implements OnInit {
   }
 
     openDialog(): void {
-      console.log("las tareas son ",this.tareas);
       const dialogRef = this.dialog.open(AllGeoreferencedTasksDialogComponent, {
             height: '80vh',
             width: '100vw',
@@ -197,7 +199,6 @@ export class AllGeoreferencedTasksDialogComponent implements OnInit {
                     this.markersMap2.push(punto);
                 }
             }
-            console.log("layers",this.markersMap2);
     }
 
     onNoClick(): void {

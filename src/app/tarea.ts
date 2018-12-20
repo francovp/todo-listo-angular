@@ -21,9 +21,10 @@ export class Tarea {
     fecha_termino: any;
     lat: number;
     lng: number;
+    nombre_usuario: string;
 
 
-    constructor(id, titulo, descripcion, fecha_inicio, fecha_termino, estado = EstadoTarea.Creada,lat,lng) {
+    constructor(id, titulo, descripcion, fecha_inicio, fecha_termino, estado = EstadoTarea.Creada,lat,lng,nombre_usuario) {
         this.id = id;
         this.titulo = titulo;
         this.descripcion = descripcion;
@@ -32,6 +33,7 @@ export class Tarea {
         this.fecha_termino = fecha_termino;
         this.lat = lat;
         this.lng = lng;
+        this.nombre_usuario = nombre_usuario;
     }
 
     toString() {
