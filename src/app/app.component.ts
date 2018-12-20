@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { Tarea, EstadoTarea } from './tarea';
 import { TareaService } from './tarea.service';
 import { interval } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import * as L from 'leaflet';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-root',
@@ -24,19 +25,21 @@ export class AppComponent implements OnInit {
   user_token: string;
   options;
 
-  constructor(public tareaService: TareaService, private http: HttpClient) {
+    markers: L.Layer[] = [];
+
+  constructor(public tareaService: TareaService, private http: HttpClient, public dialog: MatDialog) {
     this.tareas = [];
     this.newTarea = new Tarea(null, null, null, null, null,0,null,null);
     let maybe_user_token = window.localStorage.getItem('user_token');
     console.log(`ls user token: ${maybe_user_token}`);
     if(maybe_user_token) {
       this.loggedIn = true;
-      this.user_token = maybe_user_token; 
+      this.user_token = maybe_user_token;
     }
   }
 
   iniciarSesion() {
-    console.log(`u: ${this.username} - p: ${this.password}`);  
+    console.log(`u: ${this.username} - p: ${this.password}`);
     this.http.post('http://localhost:8000/rest-auth/login/', {
       'username': this.username,
       'password': this.password,
@@ -46,7 +49,7 @@ export class AppComponent implements OnInit {
         this.user_token = res['key'];
         window.localStorage.setItem('user_token', res['key']);
         this.refrescarTareas();
-    })  
+    })
   }
 
   ngOnInit() {
@@ -55,10 +58,10 @@ export class AppComponent implements OnInit {
       layers: [
         L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: '...' })
       ],
-      zoom: 15,      
-      center: L.latLng(-33.0454915,-71.6124715),
+      zoom: 15,
+      center: L.latLng(-33.0454915, -71.6124715),
     };
-    
+
 
     this.refrescarTareas();
     interval(30 * 1000).subscribe(_ => {
@@ -66,7 +69,7 @@ export class AppComponent implements OnInit {
       this.refrescarTareas();
     });
   }
-  markersMap2: L.Layer[] = [];
+
   refrescarTareas() {
     console.log("refresco");
     this.tareaService.getTareas(this.user_token)
@@ -74,31 +77,6 @@ export class AppComponent implements OnInit {
         this.tareas = ts;
       });
 
-    for(let i of this.tareas)
-    {
-      if(i.fecha_inicio==null|| i.fecha_termino == null)
-        var punto = L.marker([i.lat,i.lng],{
-          icon: L.icon({
-             iconSize: [ 25, 41 ],
-             iconAnchor: [ 13, 41 ],
-             iconUrl:   'assets/marker-icon.png',
-             shadowUrl: 'assets/marker-shadow.png'
-          })
-        } ).bindPopup(i.titulo + "\n"+i.descripcion+"\n"+i.estado);
-      else if(i.fecha_inicio!=null && i.fecha_termino != null)
-      var punto = L.marker([i.lat,i.lng],
-        {
-          icon: L.icon({
-             iconSize: [ 25, 41 ],
-             iconAnchor: [ 13, 41 ],
-             iconUrl:   'assets/marker-icon.png',
-             shadowUrl: 'assets/marker-shadow.png'
-          })
-        }).bindPopup(i.titulo + "\n"+i.descripcion+"\n"+i.fecha_inicio+"\n"+i.fecha_termino+"\n"+i.estado);
-      
-      this.markersMap2.push(punto);
-    }
-    console.log("laayers",this.markersMap2);
   }
 
   mapClick(evt) {
@@ -108,7 +86,6 @@ export class AppComponent implements OnInit {
     this.addMarker(evt['latlng']);
   }
 
-  markers: L.Layer[] = [];
   addMarker(latlng) {
     this.newTarea.lat = latlng['lat'];
     this.newTarea.lng = latlng['lng'];
@@ -124,8 +101,8 @@ export class AppComponent implements OnInit {
     while(this.markers.length > 0) {
       this.markers.pop();
     }
-		this.markers.push(newMarker);
-	}
+    this.markers.push(newMarker);
+  }
 
   actualizarTarea(t: Tarea) {
     console.log(`La tarea ${t} fue actualizada!`);
@@ -139,8 +116,7 @@ export class AppComponent implements OnInit {
   crearTarea() {
     this.tareaService.crearTarea(this.newTarea, this.user_token).subscribe(_ => {
       this.refrescarTareas();
-
-    })
+    });
   }
 
   estado2str(e: EstadoTarea) {
@@ -151,8 +127,64 @@ export class AppComponent implements OnInit {
     }
   }
 
+    openDialog(): void {
+        const dialogRef = this.dialog.open(AllGeoreferencedTasksDialogComponent, {
+            height: '80vh',
+            width: '100vw',
+            data: {tasks: this.tareas}
+        });
+    
+        dialogRef.afterClosed().subscribe(result => {
+            console.log('The dialog was closed');
+        });
+    }
+
 }
 
+@Component({
+    selector: 'all-georeferenced-tasks-dialog-component',
+    templateUrl: 'all-georeferenced-tasks-dialog-component.html',
+})
+export class AllGeoreferencedTasksDialogComponent implements OnInit {
+    markersMap2: L.Layer[] = [];
+    constructor(
+        public dialogRef: MatDialogRef<AllGeoreferencedTasksDialogComponent>,
+        @Inject(MAT_DIALOG_DATA) public data: any) {}
+
+        ngOnInit(){
+            for (let task of this.data.tasks) {
+                let latlng = L.latLng(task.lat, task.lng);
+                if (task.fecha_inicio === null || task.fecha_termino === null) {
+                    let punto = L.marker(latlng, {
+                        icon: L.icon({
+                            iconSize: [ 25, 41 ],
+                            iconAnchor: [ 13, 41 ],
+                            iconUrl:   'assets/marker-icon.png',
+                            shadowUrl: 'assets/marker-shadow.png'
+                        })
+                    } ).bindPopup(task.titulo + "\n"+task.descripcion+"\n"+task.estado);
+                } else {
+                    let punto = L.marker(latlng,
+                        {
+                            icon: L.icon({
+                                iconSize: [ 25, 41 ],
+                                iconAnchor: [ 13, 41 ],
+                                iconUrl:   'assets/marker-icon.png',
+                                shadowUrl: 'assets/marker-shadow.png'
+                            })
+                        }).bindPopup(task.titulo + "\n"+task.descripcion+"\n"+task.fecha_inicio+"\n"+task.fecha_termino+"\n"+task.estado);
+
+                    this.markersMap2.push(punto);
+                }
+            }
+            console.log("layers",this.markersMap2);
+    }
+
+    onNoClick(): void {
+        this.dialogRef.close();
+    }
+
+}
 
 
 

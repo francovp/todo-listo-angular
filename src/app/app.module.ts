@@ -5,12 +5,19 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 
-import { AppComponent } from './app.component';
+import { AllGeoreferencedTasksDialogComponent, AppComponent } from './app.component';
 import { TareaCreadaComponent } from './tarea-creada/tarea-creada.component';
 import { TareaEnProcesoComponent } from './tarea-en-proceso/tarea-en-proceso.component';
 import { TareaTerminadaComponent } from './tarea-terminada/tarea-terminada.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import {MatDatepickerModule, MatFormFieldModule, MatInputModule, MatNativeDateModule} from '@angular/material';
+import {
+  MatButtonModule,
+  MatDatepickerModule,
+  MatDialogModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatNativeDateModule
+} from '@angular/material';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
@@ -18,7 +25,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppComponent,
     TareaCreadaComponent,
     TareaEnProcesoComponent,
-    TareaTerminadaComponent
+    TareaTerminadaComponent,
+    AllGeoreferencedTasksDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -31,7 +39,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MatNativeDateModule,
     MatDatepickerModule,
     MatFormFieldModule,
+    MatDialogModule,
+    MatButtonModule,
     BrowserAnimationsModule
+  ],
+  entryComponents: [
+    AllGeoreferencedTasksDialogComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
