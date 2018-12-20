@@ -70,24 +70,21 @@
               [for]="endPicker"></mat-datepicker-toggle>
             <mat-datepicker #endPicker></mat-datepicker>
           </mat-form-field>
-          <br>
-          <button
+            <div class="my-2">
+                Elejir punto geográfico
+                <div style="height: 300px;" leaflet
+                     [leafletOptions]="options"
+                     (leafletClick)="mapClick($event)"
+                     [leafletLayers]="markers">
+                </div>
+            </div>
+          <button class="mb-3"
+                  mat-raised-button color="primary"
             [disabled]="f.invalid"
             type="submit"
             class="btn btn-primary">
-            Crear Tarea
-          </button>
+              Crear Tarea</button>
         </form>
-        <hr>
-        <div
-          style="height: 300px;"
-          leaflet
-          [leafletOptions]="options"
-          (leafletClick)="mapClick($event)"
-          [leafletLayers]="markersMap2"
-          >
-        </div>
-
       </div>
 
       <div

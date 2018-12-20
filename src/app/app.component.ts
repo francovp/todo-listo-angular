@@ -109,11 +109,9 @@ export class AppComponent implements OnInit {
   }
 
   markers: L.Layer[] = [];
-  lat: number;
-  lng: number;
   addMarker(latlng) {
-    this.lat = latlng['lat'];
-    this.lng = latlng['lng']
+    this.newTarea.lat = latlng['lat'];
+    this.newTarea.lng = latlng['lng'];
     const newMarker = L.marker([latlng['lat'],  latlng['lng']], {
       icon: L.icon({
          iconSize: [ 25, 41 ],
@@ -139,8 +137,7 @@ export class AppComponent implements OnInit {
   }
 
   crearTarea() {
-    console.log('ubicacion : ',this.lat, this.lng);
-    this.tareaService.crearTarea(this.newTarea, this.user_token, this.lat, this.lng ).subscribe(_ => {
+    this.tareaService.crearTarea(this.newTarea, this.user_token).subscribe(_ => {
       this.refrescarTareas();
 
     })
