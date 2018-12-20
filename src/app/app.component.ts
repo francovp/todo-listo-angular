@@ -34,7 +34,7 @@ export class AppComponent implements OnInit {
     let maybe_user_token = window.localStorage.getItem('user_token');
     let maybe_user = window.localStorage.getItem('username');
     console.log("nombre de usuario",maybe_user);
-    if(maybe_user_token) {
+    if(maybe_user_token && maybe_user) {
       this.loggedIn = true;
       this.user_token = maybe_user_token;
       this.username = maybe_user;
